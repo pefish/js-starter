@@ -20,12 +20,10 @@ export default class Starter {
     })
       .then(() => {
         onExit && onExit(null);
-        process.exit(0);
       })
       .catch((err: Error) => {
         console.error(err);
         onExit && onExit(err);
-        process.exit(1);
       });
 
     const cleanupAndExit = () => {
@@ -39,7 +37,6 @@ export default class Starter {
       }
       console.log(`Got interrupt, exiting...`);
       onExit && onExit(null);
-      process.exit(0);
     };
 
     process.on("SIGINT", () => {
