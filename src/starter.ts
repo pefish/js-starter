@@ -19,11 +19,17 @@ export default class Starter {
       abortSignal: abortController.signal,
     })
       .then(() => {
-        onExit && onExit(null);
+        onExit &&
+          onExit(null).then(() => {
+            process.exit(0);
+          });
       })
       .catch((err: Error) => {
         console.error(err);
-        onExit && onExit(err);
+        onExit &&
+          onExit(err).then(() => {
+            process.exit(1);
+          });
       });
 
     const cleanupAndExit = () => {
@@ -36,7 +42,10 @@ export default class Starter {
         return;
       }
       console.log(`Got interrupt, exiting...`);
-      onExit && onExit(null);
+      onExit &&
+        onExit(null).then(() => {
+          process.exit(0);
+        });
     };
 
     process.on("SIGINT", () => {
