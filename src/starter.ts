@@ -13,9 +13,10 @@ export default class Starter {
   ): void {
     let shutDownCount = 0;
     const abortController = new AbortController();
+    const logger = new Logger();
 
     method({
-      logger: new Logger(),
+      logger: logger,
       abortSignal: abortController.signal,
     })
       .then(() => {
@@ -25,7 +26,7 @@ export default class Starter {
           });
       })
       .catch((err: Error) => {
-        console.error(err);
+        logger.error(err);
         onExit &&
           onExit(err).then(() => {
             process.exit(1);
@@ -38,10 +39,10 @@ export default class Starter {
       }
       if (shutDownCount < 3) {
         abortController.abort("Ctrl C");
-        console.log(`Got interrupt, exiting... ${3 - shutDownCount}`);
+        logger.info(`Got interrupt, exiting... ${3 - shutDownCount}`);
         return;
       }
-      console.log(`Got interrupt, exiting...`);
+      logger.info(`Got interrupt, exiting...`);
       onExit &&
         onExit(null).then(() => {
           process.exit(0);
@@ -50,13 +51,13 @@ export default class Starter {
 
     process.on("SIGINT", () => {
       shutDownCount++;
-      console.log("Received SIGINT (Ctrl+C). Cleaning up...");
+      logger.info("Received SIGINT (Ctrl+C). Cleaning up...");
       cleanupAndExit();
     });
 
     process.on("SIGTERM", () => {
       shutDownCount++;
-      console.log("Received SIGTERM. Cleaning up...");
+      logger.info("Received SIGTERM. Cleaning up...");
       cleanupAndExit();
     });
   }
